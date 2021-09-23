@@ -66,10 +66,10 @@ exports.borrowBook = catchAsync(async (req, res, next) => {
         message = `${req.user.user_name} borrowed ${book.dataValues.name}`;
         book.quantity--;
         book.save();
-        // await Borrowing.create({
-        //     BookId: req.body.book_id,
-        //     UserEmail: req.user.email,
-        // });
+        await Borrowing.create({
+            BookId: req.body.book_id,
+            UserEmail: req.user.email,
+        });
     }else
         message = 'Stock out of book!'
     
@@ -81,15 +81,23 @@ exports.borrowBook = catchAsync(async (req, res, next) => {
 
 //[LIBRARIAN] return book
 exports.returnBook = catchAsync(async (req, res, next) => {
-    const transaction = Borrowing.update({
-        dateReturned: new Date(Date.now()),
-    },{
+    const transaction = await Borrowing.findOne(
+    {
         where: {
             UserEmail: req.user.email,
             BookId: req.body.book_id,
-        }
+            dateReturned: {
+                [Op.eq]: null,
+            },
+        },
     })
-    if(transaction < 1) return next(new AppError("You haven't borrowed this book yet", 400));
+
+    //Book isn't borrowed
+    if(transaction < 1) 
+        res.status(200).json({
+            status: 'fail',
+            message: "You haven't borrowed this book yet"
+        })
 
     //Increase book quantity
     const book = await Book.findOne({

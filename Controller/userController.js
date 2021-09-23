@@ -2,6 +2,7 @@ const User = require('../Model/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Book = require('../Model/bookModel');
+const Review = require('../Model/reviewModel');
 
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
@@ -19,8 +20,8 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 exports.userList = catchAsync(async (req, res) => {
     const list = await User.findAll({
         include: {
-            model: Book,
-            attributes: ['name', 'id'],
+            model: Review,
+            //attributes: ['name', 'id'],
             //required: true,
         },
         attributes: ['email', 'user_name', 'role'],
