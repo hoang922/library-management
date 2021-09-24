@@ -14,7 +14,8 @@ exports.getReviewList = catchAsync(async (req, res) => {
 })
 
 exports.createReview = catchAsync(async (req, res) => {
-    req.body.UserEmail = req.user.email
+    req.body.UserEmail = req.user.email;
+    req.body.BookId = req.params.id;
     const review = await Review.create(req.body);
     res.status(200).json({
         status: 'Success',

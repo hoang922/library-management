@@ -1,7 +1,7 @@
 const { sequelize, Sequelize } = require('../config/DBconfig');
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
-
+const Review = require('./reviewModel');
 
 const User = sequelize.define('User', {
     email: {
@@ -35,4 +35,8 @@ User.beforeSave(async user => {
 
 User.prototype.matchPassword = async (candidatePassword, userPassword) => bcrypt.compare(candidatePassword, userPassword);
 
+
+
+User.hasMany(Review)
+Review.belongsTo(User);
 module.exports = User;

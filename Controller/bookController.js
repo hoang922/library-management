@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const Book = require('../Model/bookModel');
 const Borrowing = require('../Model/borrowingModel');
 const User = require('../Model/userModel');
+const Review = require('../Model/reviewModel');
 exports.createBook = catchAsync(async (req, res) => {
     //console.log(req.body)
     const book = await Book.create(req.body);
@@ -15,7 +16,16 @@ exports.createBook = catchAsync(async (req, res) => {
 })
 
 exports.bookList = catchAsync(async (req, res) => {
-    const list = await Book.findAll();
+    const list = await Book.findAll({
+        include: {
+            model: Review,
+            attributes: ['content', 'averageReview'],
+            include: {
+                model: User,
+                attributes: ['user_name']
+            },
+        },
+    });
     res.status(200).json({
         status: 'Success',
         data:{
